@@ -22,7 +22,7 @@ while (1 -eq 1)
 	
 	if ($__cmd -eq "")
 	{
-		Sleep 3
+		Sleep 2
 		continue
 	}
 	

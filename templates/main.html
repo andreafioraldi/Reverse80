@@ -11,8 +11,8 @@
 				cmd = $('#input_box').val();
 				//alert("sending: " + cmd);
 				$('#input_box').val('');
-				$('#output_area').val($('#output_area').val() + cmd + '\n');
-				$('#output_area').scrollTop($('#output_area')[0].scrollHeight);
+				//$('#output_area').val($('#output_area').val() + cmd + '\n');
+				//$('#output_area').scrollTop($('#output_area')[0].scrollHeight);
 				socket.emit('command', cmd);
 			}
 			var socket;
@@ -43,6 +43,8 @@
 		bottom: 76px;
 		border: none;
 		outline: none;
+		background: #181818;
+		color: #F8F8F8;
 		min-height: calc(100% - 76px);
 	}
 	#input_box {

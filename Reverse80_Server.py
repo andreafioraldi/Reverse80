@@ -27,6 +27,7 @@ def cmd_page():
         return ""
     cmd = cmd_queque.get()
     print('sended command: ' + cmd)
+    socketio.emit("output", cmd, broadcast=True)
     return cmd
 
 @app.route('/result', methods=['POST'])
