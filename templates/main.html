@@ -15,6 +15,9 @@
 			function sendCommand() {
 				socket.emit('command', cmd);
 			}
+			function sendClose() {
+				socket.emit('close');
+			}
 			$(document).ready(function(){
 				socket = io.connect(document.URL);
 				socket.on('output', function(msg) {
@@ -95,7 +98,8 @@
 	<body>
 		<div id="top_div">
 			<a class="btn" onclick="clearOutput();" style="margin-right: 16px;">Clear</a>
-			<a class="btn" onclick="sendCommand();">Resend</a>
+			<a class="btn" onclick="sendCommand();" style="margin-right: 16px;">Resend</a>
+			<a class="btn" onclick="clearOutput(); sendClose();">Close</a>
 		</div>
 		<textarea readonly id="output_area"></textarea>
 		<input id="input_box" class="textarea" placeholder="Command: " />
