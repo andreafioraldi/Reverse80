@@ -2,20 +2,19 @@
 <html>
 	<head>
 		<meta charset="ISO-8859-1">
-		<meta name="viewport" content="width=device-width,height=device-height,initial-scale=1.0"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<title>Reverse80 Shell</title>
-		<script type="text/javascript" src="//code.jquery.com/jquery-1.4.2.min.js"></script>
+		<script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
 		<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"></script>
 		<script type="text/javascript" charset="utf-8">
+			var socket;
+			var cmd = "";
+			function clearOutput() {
+				$('#output_area').val('');
+			}
 			function sendCommand() {
-				cmd = $('#input_box').val();
-				//alert("sending: " + cmd);
-				$('#input_box').val('');
-				//$('#output_area').val($('#output_area').val() + cmd + '\n');
-				//$('#output_area').scrollTop($('#output_area')[0].scrollHeight);
 				socket.emit('command', cmd);
 			}
-			var socket;
 			$(document).ready(function(){
 				socket = io.connect(document.URL);
 				socket.on('output', function(msg) {
@@ -24,28 +23,57 @@
 				});
 				$('#input_box').keypress(function(e) {
 					var code = e.keyCode || e.which;
-					if (code == 13)
+					if (code == 13) {
+						cmd = $('#input_box').val();
+						$('#input_box').val('');
 						sendCommand();
+					}
 				});
 			});
 		</script>
 	</head>
 	<style>
+	.btn {
+		-webkit-border-radius: 30;
+		-moz-border-radius: 30;
+		border-radius: 30px;
+		font-family: Arial;
+		color: #ffffff;
+		font-size: 12px;
+		background: #292929;
+		padding: 6px 11px 6px 11px;
+		text-decoration: none;
+		position: relative;
+	}
+	#top_div {
+		position: fixed;
+		top: 0px;
+		left: 0px;
+		right: 0px;
+		width: 100%;
+		height: 40px;
+		z-index: 99;
+		background: #D3D3D3;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
 	#output_area {
 		padding: 8px;
 		resize: none;
 		position: fixed;
 		width: calc(100% - 16px);
-		height: calc(100% - 76px);
+		height: calc(100% - 116px);
 		left: 0px;
 		right: 0px;
-		top: 0px;
+		top: 40px;
 		bottom: 76px;
 		border: none;
 		outline: none;
 		background: #181818;
 		color: #F8F8F8;
-		min-height: calc(100% - 76px);
+		min-height: calc(100% - 116px);
+		font-family: Arial;
 	}
 	#input_box {
 		position: fixed;
@@ -61,9 +89,14 @@
 		padding-left: 10px;
 		padding-right: 10px;
 		font-weight: 400;
+		font-family: Arial;
 	}
 	</style>
 	<body>
+		<div id="top_div">
+			<a class="btn" onclick="clearOutput();" style="margin-right: 16px;">Clear</a>
+			<a class="btn" onclick="sendCommand();">Resend</a>
+		</div>
 		<textarea readonly id="output_area"></textarea>
 		<input id="input_box" class="textarea" placeholder="Command: " />
 	</body>
