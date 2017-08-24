@@ -50,4 +50,8 @@ def payload_page():
     return c 
 
 if __name__ == '__main__':
-    socketio.run(app)
+    import os
+    port = 5000
+    if "PORT" in os.environ:
+        port = os.environ["PORT"]
+    socketio.run(app, host="0.0.0.0", port=port)

@@ -1,1 +1,1 @@
-web gunicorn Reverse80_Server:app
+web python Reverse80_Server.py

@@ -1,6 +1,2 @@
-Flask
 Flask-SocketIO
-gevent
-gevent-websocket
-greenlet
-gunicorn
+eventlet

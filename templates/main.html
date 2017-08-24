@@ -15,7 +15,7 @@
 			}
 			var socket;
 			$(document).ready(function(){
-				socket = io.connect('http://' + document.domain + ':' + location.port);
+				socket = io.connect(document.URL);
 				socket.on('output', function(msg) {
 					$('#output_area').val($('#output_area').val() + msg);
 					$('#output_area').scrollTop($('#output_area')[0].scrollHeight);
