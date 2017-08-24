@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="ISO-8859-1">
+		<title>ReverWSock Shell</title>
+		<script type="text/javascript" src="//code.jquery.com/jquery-1.4.2.min.js"></script>
+		<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"></script>
+		<script type="text/javascript" charset="utf-8">
+			function sendCommand() {
+				cmd = $('#input_box').val();
+				//alert("sending: " + cmd);
+				$('#input_box').val('');
+				$('#output_area').val($('#output_area').val() + cmd + '\n');
+				socket.emit('command', cmd);
+			}
+			var socket;
+			$(document).ready(function(){
+				socket = io.connect('http://' + document.domain + ':' + location.port);
+				socket.on('output', function(msg) {
+					$('#output_area').val($('#output_area').val() + msg);
+					$('#output_area').scrollTop($('#output_area')[0].scrollHeight);
+				});
+				$('#input_box').keypress(function(e) {
+					var code = e.keyCode || e.which;
+					if (code == 13)
+						sendCommand();
+				});
+			});
+		</script>
+	</head>
+	<style>
+	#footer {
+		position: fixed;
+		bottom: 8px;
+		right: 8px;
+		left: 8px;
+	}
+	#output_area {
+		resize: none;
+		position: fixed;
+		width: calc(100% - 24px);
+		height: calc(100% - 64px);
+		left: 8px;
+		top: 8px;
+	}
+	</style>
+	<body>
+		<textarea readonly id="output_area"></textarea>
+		<div id="footer">
+			<input type="submit" value="Clear" style="float: right" onclick="$('#output_area').val('');"/>
+			<input type="submit" value="Send" style="float: right" onclick="sendCommand();"/>
+			<div style="overflow: hidden; padding-right: .5em;">
+				<input id="input_box" placeholder="Command: " style="width: 100%;"/>
+			</div>
+		</div>
+	</body>
+</html> 
