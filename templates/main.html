@@ -29,29 +29,37 @@
 		</script>
 	</head>
 	<style>
-	#footer {
-		position: fixed;
-		bottom: 8px;
-		right: 8px;
-		left: 8px;
-	}
 	#output_area {
 		resize: none;
 		position: fixed;
-		width: calc(100% - 24px);
-		height: calc(100% - 64px);
-		left: 8px;
-		top: 8px;
+		width: 100%;
+		height: calc(100% - 50px);
+		left: 0px;
+		right: 0px;
+		top: 0px;
+		bottom: 50px;
+		border: none;
+		outline: none;
+		min-height: calc(100% - 50px);
+	}
+	#input_box {
+		position: fixed;
+		bottom: 0px;
+		left: 0px;
+		right: 0px;
+		width: 100%;
+		height: 50px;
+		z-index: 99;
+		background: #D3D3D3;
+		border: none;
+		outline: none;
+		padding-left: 20px;
+		padding-right: 20px;
+		font-weight: 400;
 	}
 	</style>
 	<body>
 		<textarea readonly id="output_area"></textarea>
-		<div id="footer">
-			<input type="submit" value="Clear" style="float: right" onclick="$('#output_area').val('');"/>
-			<input type="submit" value="Send" style="float: right" onclick="sendCommand();"/>
-			<div style="overflow: hidden; padding-right: .5em;">
-				<input id="input_box" placeholder="Command: " style="width: 100%;"/>
-			</div>
-		</div>
+		<input id="input_box" class="textarea" placeholder="Command: " />
 	</body>
 </html> 
