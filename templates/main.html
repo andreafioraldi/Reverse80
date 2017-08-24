@@ -12,6 +12,7 @@
 				//alert("sending: " + cmd);
 				$('#input_box').val('');
 				$('#output_area').val($('#output_area').val() + cmd + '\n');
+				$('#output_area').scrollTop($('#output_area')[0].scrollHeight);
 				socket.emit('command', cmd);
 			}
 			var socket;
@@ -34,15 +35,15 @@
 		padding: 8px;
 		resize: none;
 		position: fixed;
-		width: 100%;
-		height: calc(100% - 80px);
+		width: calc(100% - 16px);
+		height: calc(100% - 76px);
 		left: 0px;
 		right: 0px;
 		top: 0px;
-		bottom: 80px;
+		bottom: 76px;
 		border: none;
 		outline: none;
-		min-height: calc(100% - 80px);
+		min-height: calc(100% - 76px);
 	}
 	#input_box {
 		position: fixed;
@@ -50,7 +51,7 @@
 		left: 0px;
 		right: 0px;
 		width: 100%;
-		height: 80px;
+		height: 60px;
 		z-index: 99;
 		background: #D3D3D3;
 		border: none;
