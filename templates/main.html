@@ -9,20 +9,43 @@
 		<script type="text/javascript" charset="utf-8">
 			var socket;
 			var cmd = "";
-			function clearOutput() {
-				$('#output_area').val('');
-			}
+			var shells = {
+				{% for shell_name in shells %}
+					{% if shell_name != "__server_log__" %}
+						"{{ shell_name }}" : `{{ shells[shell_name].output | safe }}`,
+					{% endif %}
+				{% endfor %}
+				"__server_log__" : `{{ shells['__server_log__'].output | safe }}`
+			};
+
 			function sendCommand() {
-				socket.emit('command', cmd);
+				var sh = $('#shell_selection :selected').val();
+				if(sh != "__server_log__")
+					socket.emit('command', cmd, sh);
 			}
 			function sendClose() {
-				socket.emit('close');
+				var sh = $('#shell_selection :selected').val();
+				if(sh != "__server_log__") {
+					socket.emit('close', sh);
+					$("#shell_selection option[value='" + sh + "']").remove();
+					delete shells[sh];
+				}
 			}
 			$(document).ready(function(){
 				socket = io.connect(document.URL);
-				socket.on('output', function(msg) {
-					$('#output_area').val($('#output_area').val() + msg);
-					$('#output_area').scrollTop($('#output_area')[0].scrollHeight);
+				socket.on('output', function(msg, shell_name) {
+					shells[shell_name] += msg;
+					var sh = $('#shell_selection :selected').val();
+					if(sh == shell_name) {
+						$('#output_area').val($('#output_area').val() + msg);
+						$('#output_area').scrollTop($('#output_area')[0].scrollHeight);
+					}
+				});
+				socket.on('connected', function(shell_name) {
+					$('#shell_selection').append($('<option>', {
+						value: shell_name,
+						text: shell_name
+					}));
 				});
 				$('#input_box').keypress(function(e) {
 					var code = e.keyCode || e.which;
@@ -32,6 +55,12 @@
 						sendCommand();
 					}
 				});
+				$('#shell_selection').change(function () {
+					$('#output_area').val(shells[$(this).val()]);
+					$('#output_area').scrollTop($('#output_area')[0].scrollHeight);
+				});
+				$('#output_area').val(shells['__server_log__']);
+				$('#output_area').scrollTop($('#output_area')[0].scrollHeight);
 			});
 		</script>
 	</head>
@@ -97,9 +126,17 @@
 	</style>
 	<body>
 		<div id="top_div">
-			<a class="btn" onclick="clearOutput();" style="margin-right: 16px;">Clear</a>
+			<select id="shell_selection" style="margin-right: 16px; right: 16px;">
+				<option value="__server_log__">Server log</option>
+				{% for shell_name in shells %}
+					{% if shell_name != "__server_log__" %}
+						<option value="{{ shell_name }}">{{ shell_name }}</option>
+					{% endif %}
+				{% endfor %}
+			</select>
+			<a class="btn" onclick="$('#output_area').val('');" style="margin-right: 16px;">Clear</a>
 			<a class="btn" onclick="sendCommand();" style="margin-right: 16px;">Resend</a>
-			<a class="btn" onclick="clearOutput(); sendClose();">Close</a>
+			<a class="btn" onclick="sendClose();">Close</a>
 		</div>
 		<textarea readonly id="output_area"></textarea>
 		<input id="input_box" class="textarea" placeholder="Command: " />

