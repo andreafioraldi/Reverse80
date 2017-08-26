@@ -13,10 +13,10 @@
 			var shells = {
 				{% for shell_name in shells %}
 					{% if shell_name != "__server_log__" %}
-						"{{ shell_name }}" : `{{ shells[shell_name].output | safe }}`,
+						"{{ shell_name }}" : "{{ shells[shell_name].output | safe }}",
 					{% endif %}
 				{% endfor %}
-				"__server_log__" : `{{ shells['__server_log__'].output | safe }}`
+				"__server_log__" : "{{ shells['__server_log__'].output | safe }}"
 			};
 
 			function sendCommand() {

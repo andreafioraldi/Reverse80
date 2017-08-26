@@ -10,11 +10,14 @@ class Shell:
 
 shells = {"__server_log__": Shell()}
 
+def stringify(s):
+    return s.replace("\\","\\\\").replace("\"","\\\"").replace("\n","\\n")
+
 def server_log(msg):
     global shells
     msg += "\n"
     socketio.emit("output", (msg, "__server_log__"), broadcast=True)
-    shells["__server_log__"].output += msg.replace("\\","\\\\")
+    shells["__server_log__"].output += stringify(msg)
     print(msg)
 
 @socketio.on('command')
@@ -58,7 +61,7 @@ def cmd_page():
         return ""
     cmd = shells[shell_name].cmd_queque.pop(0)
     server_log('[' + shell_name + '] sended command: ' + cmd)
-    shells[shell_name].output += cmd.replace("\\","\\\\") + "\n"
+    shells[shell_name].output += stringify(cmd) + "\n"
     socketio.emit("output", (cmd + "\n", shell_name), broadcast=True)
     return cmd
 
@@ -67,7 +70,7 @@ def result_page():
     msg = request.form['output']
     shell_name = request.form['name']
     server_log('[' + shell_name + '] command output: ' + msg)
-    shells[shell_name].output += msg.replace("\\","\\\\")
+    shells[shell_name].output += stringify(msg)
     socketio.emit("output", (msg, shell_name), broadcast=True)
     return "OK"
 
