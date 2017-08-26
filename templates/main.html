@@ -1,140 +1,140 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<meta charset="ISO-8859-1">
-		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<meta name="mobile-web-app-capable" content="yes">
-		<title>Reverse80 Shell</title>
-		<script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
-		<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"></script>
-		<script type="text/javascript" charset="utf-8">
-			var socket;
-			var cmd = "";
-			var shells = {};
+    <head>
+        <meta charset="ISO-8859-1">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="mobile-web-app-capable" content="yes">
+        <title>Reverse80 Shell</title>
+        <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+        <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"></script>
+        <script type="text/javascript" charset="utf-8">
+            var socket;
+            var cmd = "";
+            var shells = {};
 
-			function sendCommand() {
-				var sh = $('#shell_selection :selected').val();
-				if(sh != "__server_log__")
-					socket.emit('command', cmd, sh);
-			}
-			function sendClose() {
-				var sh = $('#shell_selection :selected').val();
-				if(sh != "__server_log__") {
-					socket.emit('close', sh);
-					$("#shell_selection option[value='" + sh + "']").remove();
-					delete shells[sh];
-				}
-			}
-			$(document).ready(function(){
-				socket = io.connect(document.URL);
-				socket.on('output', function(msg, shell_name) {
-					shells[shell_name] = (shells[shell_name] || "") + msg;
-					var sh = $('#shell_selection :selected').val();
-					if(sh == shell_name) {
-						$('#output_area').val($('#output_area').val() + msg);
-						$('#output_area').scrollTop($('#output_area')[0].scrollHeight);
-					}
-				});
-				socket.on('connected', function(shell_name) {
-					$('#shell_selection').append($('<option>', {
-						value: shell_name,
-						text: shell_name
-					}));
-				});
-				$('#input_box').keypress(function(e) {
-					var code = e.keyCode || e.which;
-					if (code == 13) {
-						cmd = $('#input_box').val();
-						$('#input_box').val('');
-						sendCommand();
-					}
-				});
-				$('#shell_selection').change(function () {
-					$('#output_area').val(shells[$(this).val()]);
-					$('#output_area').scrollTop($('#output_area')[0].scrollHeight);
-				});
-			});
-		</script>
-	</head>
-	<style>
-	.btn {
-		-webkit-border-radius: 30;
-		-moz-border-radius: 30;
-		border-radius: 30px;
-		font-family: Arial;
-		color: #ffffff;
-		font-size: 12px;
-		background: #292929;
-		padding: 6px 11px 6px 11px;
-		text-decoration: none;
-		position: relative;
-		margin-right: 16px;
-	}
-	#top_div {
-		position: fixed;
-		top: 0px;
-		left: 0px;
-		right: 0px;
-		width: 100%;
-		height: 40px;
-		z-index: 99;
-		background: #D3D3D3;
-		display: flex;
-		align-items: center;
-	}
-	#shell_selection {
-		width: 100%;
-		margin-right: 16px;
-	}
-	#output_area {
-		padding: 8px;
-		resize: none;
-		position: fixed;
-		width: calc(100% - 16px);
-		height: calc(100% - 116px);
-		left: 0px;
-		right: 0px;
-		top: 40px;
-		bottom: 76px;
-		border: none;
-		outline: none;
-		background: #181818;
-		color: #F8F8F8;
-		min-height: calc(100% - 116px);
-		font-family: Arial;
-	}
-	#input_box {
-		position: fixed;
-		bottom: 0px;
-		left: 0px;
-		right: 0px;
-		width: 100%;
-		height: 60px;
-		z-index: 99;
-		background: #D3D3D3;
-		border: none;
-		outline: none;
-		padding-left: 10px;
-		padding-right: 10px;
-		font-weight: 400;
-		font-family: Arial;
-	}
-	</style>
-	<body>
-		<div id="top_div">
-			<a class="btn" onclick="$('#output_area').val('');" style="margin-left: 16px;">Clear</a>
-			<a class="btn" onclick="sendCommand();">Resend</a>
-			<a class="btn" onclick="sendClose();">Close</a>
-			<select id="shell_selection">
-				<option value="__server_log__">Server log</option>
-				{% for shell_name in shells %}
-					{% if shell_name != "__server_log__" %}
-						<option value="{{ shell_name }}">{{ shell_name }}</option>
-					{% endif %}
-				{% endfor %}
-			</select>
-		</div>
-		<textarea readonly id="output_area" autocomplete="off"></textarea>
-		<input id="input_box" class="textarea" placeholder="Command: " />
-	</body>
+            function sendCommand() {
+                var sh = $('#shell_selection :selected').val();
+                if(sh != "__server_log__")
+                    socket.emit('command', cmd, sh);
+            }
+            function sendClose() {
+                var sh = $('#shell_selection :selected').val();
+                if(sh != "__server_log__") {
+                    socket.emit('close', sh);
+                    $("#shell_selection option[value='" + sh + "']").remove();
+                    delete shells[sh];
+                }
+            }
+            $(document).ready(function(){
+                socket = io.connect(document.URL);
+                socket.on('output', function(msg, shell_name) {
+                    shells[shell_name] = (shells[shell_name] || "") + msg;
+                    var sh = $('#shell_selection :selected').val();
+                    if(sh == shell_name) {
+                        $('#output_area').val($('#output_area').val() + msg);
+                        $('#output_area').scrollTop($('#output_area')[0].scrollHeight);
+                    }
+                });
+                socket.on('connected', function(shell_name) {
+                    $('#shell_selection').append($('<option>', {
+                        value: shell_name,
+                        text: shell_name
+                    }));
+                });
+                $('#input_box').keypress(function(e) {
+                    var code = e.keyCode || e.which;
+                    if (code == 13) {
+                        cmd = $('#input_box').val();
+                        $('#input_box').val('');
+                        sendCommand();
+                    }
+                });
+                $('#shell_selection').change(function () {
+                    $('#output_area').val(shells[$(this).val()]);
+                    $('#output_area').scrollTop($('#output_area')[0].scrollHeight);
+                });
+            });
+        </script>
+    </head>
+    <style>
+    .btn {
+        -webkit-border-radius: 30;
+        -moz-border-radius: 30;
+        border-radius: 30px;
+        font-family: Arial;
+        color: #ffffff;
+        font-size: 12px;
+        background: #292929;
+        padding: 6px 11px 6px 11px;
+        text-decoration: none;
+        position: relative;
+        margin-right: 16px;
+    }
+    #top_div {
+        position: fixed;
+        top: 0px;
+        left: 0px;
+        right: 0px;
+        width: 100%;
+        height: 40px;
+        z-index: 99;
+        background: #D3D3D3;
+        display: flex;
+        align-items: center;
+    }
+    #shell_selection {
+        width: 100%;
+        margin-right: 16px;
+    }
+    #output_area {
+        padding: 8px;
+        resize: none;
+        position: fixed;
+        width: calc(100% - 16px);
+        height: calc(100% - 116px);
+        left: 0px;
+        right: 0px;
+        top: 40px;
+        bottom: 76px;
+        border: none;
+        outline: none;
+        background: #181818;
+        color: #F8F8F8;
+        min-height: calc(100% - 116px);
+        font-family: Arial;
+    }
+    #input_box {
+        position: fixed;
+        bottom: 0px;
+        left: 0px;
+        right: 0px;
+        width: 100%;
+        height: 60px;
+        z-index: 99;
+        background: #D3D3D3;
+        border: none;
+        outline: none;
+        padding-left: 10px;
+        padding-right: 10px;
+        font-weight: 400;
+        font-family: Arial;
+    }
+    </style>
+    <body>
+        <div id="top_div">
+            <a class="btn" onclick="$('#output_area').val('');" style="margin-left: 16px;">Clear</a>
+            <a class="btn" onclick="sendCommand();">Resend</a>
+            <a class="btn" onclick="sendClose();">Close</a>
+            <select id="shell_selection">
+                <option value="__server_log__">Server log</option>
+                {% for shell_name in shells %}
+                    {% if shell_name != "__server_log__" %}
+                        <option value="{{ shell_name }}">{{ shell_name }}</option>
+                    {% endif %}
+                {% endfor %}
+            </select>
+        </div>
+        <textarea readonly id="output_area" autocomplete="off"></textarea>
+        <input id="input_box" class="textarea" placeholder="Command: " />
+    </body>
 </html> 

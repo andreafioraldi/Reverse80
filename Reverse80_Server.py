@@ -20,8 +20,8 @@ def server_log(msg):
 @socketio.on('connect')
 def handle_connect():
     for shell_name in shells:
-		socketio.emit("output", (shells[shell_name].output, shell_name), broadcast=True)
-	
+        socketio.emit("output", (shells[shell_name].output, shell_name), broadcast=True)
+
 @socketio.on('command')
 def handle_command(msg, shell_name):
     global shells
